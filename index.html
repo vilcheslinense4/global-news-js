@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global News Cyber-Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #00d2ff;
+            text-shadow: 0 0 15px rgba(0,210,255,0.4);
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        /* PANEL DE BOTONES (REGIONES) */
+        .panel-regiones {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+
+        .btn-region {
+            background: rgba(255, 255, 255, 0.04);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        /* El efecto táctil pro de tu portafolio */
+        .btn-region:active {
+            background: #00ffaa !important;
+            color: #0f2027;
+            border-color: #00ffaa;
+            transform: scale(0.95);
+        }
+
+        /* CONTENEDOR DE NOTICIAS (RESULTADOS) */
+        .feed-noticias {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .noticia-tarjeta {
+            background: rgba(255, 255, 255, 0.06);
+            border-left: 4px solid #00d2ff;
+            padding: 16px;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .noticia-tarjeta h3 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            color: white;
+            line-height: 1.4;
+        }
+
+        .noticia-info {
+            font-size: 0.8rem;
+            color: #00ffaa;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌍 CyberNews Hub</h1>
+        <p class="subtitulo">Conexión satelital con los principales focos de información global.</p>
+    </header>
+
+    <div class="panel-regiones">
+        <button class="btn-region" data-pais="es">🇪🇸 España</button>
+        <button class="btn-region" data-pais="us">🇺🇸 EE.UU.</button>
+        <button class="btn-region" data-pais="jp">🇯🇵 Japón</button>
+        <button class="btn-region" data-pais="gb">🇬🇧 Reino Unido</button>
+    </div>
+
+    <div class="feed-noticias" id="feed">
+        <div class="noticia-tarjeta">
+            <h3>Selecciona una estación satelital arriba para sintonizar los titulares en tiempo real...</h3>
+            <div class="noticia-info">
+                <span>Sistema: Listo</span>
+                <span>Canal: Standby</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
