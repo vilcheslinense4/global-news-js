@@ -35,38 +35,59 @@
             opacity: 0.8;
         }
 
-        /* PANEL DE BOTONES (REGIONES) */
-        .panel-regiones {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+        /* CONTENEDOR DEL SELECTOR GLOBAL */
+        .selector-container {
             width: 100%;
             max-width: 500px;
             margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .btn-region {
-            background: rgba(255, 255, 255, 0.04);
-            color: #00d2ff;
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            padding: 14px;
-            border-radius: 12px;
+        .selector-container label {
+            font-size: 0.85rem;
+            color: #00ffaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-weight: bold;
-            font-size: 0.9rem;
+        }
+
+        /* Barra de selección estilo futurista */
+        .select-cyber {
+            width: 100%;
+            padding: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            outline: none;
             cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            /* Estilo para que en iPhone se vea limpio */
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%2300d2ff'><polygon points='0,0 100,0 50,50'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
         }
 
-        /* El efecto táctil pro de tu portafolio */
-        .btn-region:active {
-            background: #00ffaa !important;
-            color: #0f2027;
+        .select-cyber:focus {
             border-color: #00ffaa;
-            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+            color: #00ffaa;
         }
 
-        /* CONTENEDOR DE NOTICIAS (RESULTADOS) */
+        /* Opciones del menú */
+        .select-cyber option {
+            background: #14262c;
+            color: white;
+        }
+
+        /* CONTENEDOR DE NOTICIAS */
         .feed-noticias {
             width: 100%;
             max-width: 500px;
@@ -81,6 +102,7 @@
             padding: 16px;
             border-radius: 0 12px 12px 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
         }
 
         .noticia-tarjeta h3 {
@@ -106,16 +128,37 @@
         <p class="subtitulo">Conexión satelital con los principales focos de información global.</p>
     </header>
 
-    <div class="panel-regiones">
-        <button class="btn-region" data-pais="es">🇪🇸 España</button>
-        <button class="btn-region" data-pais="us">🇺🇸 EE.UU.</button>
-        <button class="btn-region" data-pais="jp">🇯🇵 Japón</button>
-        <button class="btn-region" data-pais="gb">🇬🇧 Reino Unido</button>
+    <div class="selector-container">
+        <label for="pais-selector">🛰️ Sintonizar Estación:</label>
+        <select id="pais-selector" class="select-cyber">
+            <option value="" disabled selected>-- Selecciona un país del mundo --</option>
+            <option value="es">🇪🇸 España</option>
+            <option value="us">🇺🇸 Estados Unidos</option>
+            <option value="mx">🇲🇽 México</option>
+            <option value="ar">🇦🇷 Argentina</option>
+            <option value="co">🇨🇴 Colombia</option>
+            <option value="cl">🇨🇱 Chile</option>
+            <option value="gb">🇬🇧 Reino Unido</option>
+            <option value="fr">🇫🇷 Francia</option>
+            <option value="de">🇩🇪 Alemania</option>
+            <option value="it">🇮🇹 Italia</option>
+            <option value="pt">🇵🇹 Portugal</option>
+            <option value="jp">🇯🇵 Japón</option>
+            <option value="cn">🇨🇳 China</option>
+            <option value="kr">🇰🇷 Corea del Sur</option>
+            <option value="in">🇮🇳 India</option>
+            <option value="ru">🇷🇺 Rusia</option>
+            <option value="br">🇧🇷 Brasil</option>
+            <option value="ca">🇨🇦 Canadá</option>
+            <option value="au">🇦🇺 Australia</option>
+            <option value="za">🇿🇦 Sudáfrica</option>
+            <option value="eg">🇪🇬 Egipto</option>
+        </select>
     </div>
 
     <div class="feed-noticias" id="feed">
-        <div class="noticia-tarjeta">
-            <h3>Selecciona una estación satelital arriba para sintonizar los titulares en tiempo real...</h3>
+        <div class="noticia-tarjeta" id="pantalla-estado">
+            <h3 id="texto-estado">Selecciona un objetivo en la barra superior para establecer conexión satelital...</h3>
             <div class="noticia-info">
                 <span>Sistema: Listo</span>
                 <span>Canal: Standby</span>
@@ -123,5 +166,47 @@
         </div>
     </div>
 
+    <script>
+        // Función de Audio API para simular el click físico al interactuar
+        function playCyberClick() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioContext();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine'; 
+                osc.frequency.setValueAtTime(1400, audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.04);
+                
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime); 
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) {
+                console.log("Audio no disponible");
+            }
+        }
+
+        // Detectar cuando el usuario cambia de país en la barra
+        const selector = document.getElementById('pais-selector');
+        const textoEstado = document.getElementById('texto-estado');
+        const pantallaEstado = document.getElementById('pantalla-estado');
+
+        selector.addEventListener('change', (evento) => {
+            // 1. Suena el click cibernético
+            playCyberClick();
+
+            // 2. Sacamos el nombre completo del país elegido
+            const nombrePais = selector.options[selector.selectedIndex].text;
+            
+            // 3. Modificamos la interfaz simulando un escaneo
+            pantallaEstado.style.borderLeftColor = "#00ffaa"; // Cambia el borde a verde neón
+            textoEstado.innerHTML = `📡 Conectando con los servidores de <strong>${nombrePais}</strong>... Buscando señales de información.`;
+        });
+    </script>
 </body>
 </html>
