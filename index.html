@@ -439,7 +439,7 @@
 <body>
 
     <div class="top-nav">
-        <a href="https://vilcheslinense4.github.io/" class="btn-volver" onclick="playCyberClick()">⬅️ Volver a Proyectos</a>
+        <a href="../" class="btn-volver" onclick="playCyberClick()">⬅️ Volver a Proyectos</a>
     </div>
 
     <header>
@@ -554,7 +554,7 @@
         const btnCargar = document.getElementById('btn-cargar');
 
         async function descargarNoticias(acumular = false) {
-            if (!paisActual) return; // Forzar a elegir país para que la API responda bien
+            if (!paisActual) return; 
 
             if (!acumular) {
                 feed.innerHTML = "";
@@ -578,7 +578,6 @@
             }
 
             try {
-                // INTEGRACIÓN DEL PARÁMETRO DE BÚSQUEDA EN LA URL
                 let url = `https://newsdata.io/api/1/news?apikey=${MI_API_KEY}&country=${paisActual}&language=es,en`;
                 
                 const textoBusqueda = buscador.value.trim();
@@ -677,7 +676,6 @@
             });
         }
 
-        // Eventos para disparar la descarga
         selector.addEventListener('change', () => {
             paisActual = selector.value;
             descargarNoticias(false);
@@ -688,7 +686,6 @@
             descargarNoticias(false);
         });
 
-        // Permitir buscar pulsando la tecla "Enter" en el teclado del móvil o PC
         buscador.addEventListener('keyup', (e) => {
             if (e.key === 'Enter') {
                 playCyberClick();
