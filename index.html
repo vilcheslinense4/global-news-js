@@ -117,6 +117,13 @@
             line-height: 1.4;
         }
 
+        .noticia-tarjeta p {
+            font-size: 0.9rem;
+            margin: 8px 0;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
         .noticia-tarjeta a {
             color: #00d2ff;
             text-decoration: none;
@@ -147,22 +154,36 @@
     </header>
 
     <div class="selector-container">
-        <label for="categoria-selector">🛰️ Sintonizar Canal de Transmisión:</label>
-        <select id="categoria-selector" class="select-cyber">
-            <option value="" disabled selected>-- Elige una frecuencia internacional --</option>
-            <option value="technology">🤖 Tecnología & Ciberseguridad</option>
-            <option value="science">🪐 Ciencia y Espacio</option>
-            <option value="world">🌍 Noticias Globales</option>
-            <option value="business">📈 Economía y Negocios</option>
-            <option value="politics">🏛️ Política Internacional</option>
-            <option value="entertainment">🎬 Cine y Cultura</option>
-            <option value="sports">⚽ Deportes Globales</option>
+        <label for="pais-selector">🛰️ Sintonizar Estación:</label>
+        <select id="pais-selector" class="select-cyber">
+            <option value="" disabled selected>-- Selecciona un país del mundo --</option>
+            <option value="es">🇪🇸 España</option>
+            <option value="us">🇺🇸 Estados Unidos</option>
+            <option value="mx">🇲🇽 México</option>
+            <option value="ar">🇦🇷 Argentina</option>
+            <option value="co">🇨🇴 Colombia</option>
+            <option value="cl">🇨🇱 Chile</option>
+            <option value="gb">🇬🇧 Reino Unido</option>
+            <option value="fr">🇫🇷 Francia</option>
+            <option value="de">🇩🇪 Alemania</option>
+            <option value="it">🇮🇹 Italia</option>
+            <option value="pt">🇵🇹 Portugal</option>
+            <option value="jp">🇯🇵 Japón</option>
+            <option value="cn">🇨🇳 China</option>
+            <option value="kr">🇰🇷 Corea del Sur</option>
+            <option value="in">🇮🇳 India</option>
+            <option value="ru">🇷🇺 Rusia</option>
+            <option value="br">🇧🇷 Brasil</option>
+            <option value="ca">🇨🇦 Canadá</option>
+            <option value="au">🇦🇺 Australia</option>
+            <option value="za">🇿🇦 Sudáfrica</option>
+            <option value="eg">🇪🇬 Egipto</option>
         </select>
     </div>
 
     <div class="feed-noticias" id="feed">
         <div class="noticia-tarjeta" id="pantalla-estado">
-            <h3>Selecciona una frecuencia en la barra superior para entablar la conexión de red...</h3>
+            <h3>Selecciona un objetivo en la barra superior para establecer conexión satelital...</h3>
             <div class="noticia-info">
                 <span>Sistema: Listo</span>
                 <span>Canal: Standby</span>
@@ -171,6 +192,9 @@
     </div>
 
     <script>
+        // Tu clave privada de NewsData integrada
+        const MI_API_KEY = "pub_c49581d6d14b474f90eb927fd3288125";
+
         function playCyberClick() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -194,69 +218,76 @@
             }
         }
 
-        const selector = document.getElementById('categoria-selector');
+        const selector = document.getElementById('pais-selector');
         const feed = document.getElementById('feed');
 
         selector.addEventListener('change', async () => {
             playCyberClick();
 
-            const categoria = selector.value;
-            const nombreCategoria = selector.options[selector.selectedIndex].text;
+            const codigoPais = selector.value;
+            const nombrePais = selector.options[selector.selectedIndex].text;
             
-            // 1. Efecto visual pro de escaneo en verde neón
             feed.innerHTML = `
                 <div class="noticia-tarjeta escaneando" style="border-left-color: #00ffaa;">
-                    <h3>⚡ [ENLAZANDO] Extrayendo transmisiones en vivo del canal ${nombreCategoria}... Por favor, espere.</h3>
+                    <h3>🛰️ [CONECTANDO] Enlazando con los servidores de ${nombrePais}... Descargando titulares reales.</h3>
                     <div class="noticia-info">
-                        <span>Frecuencia: Conectando</span>
-                        <span>Satélite: Buscando satélites de datos...</span>
+                        <span>Frecuencia: Autenticada</span>
+                        <span>Satélite: Descargando paquetes...</span>
                     </div>
                 </div>
             `;
 
-            // 2. Conexión Real vía Fetch a la API viva de internet
             try {
-                const respuesta = await fetch(`https://inshorts.vercel.app/news?category=${categoria}`);
+                // Petición directa usando tu clave privada y filtrando por idioma español e inglés para mayor compatibilidad
+                const respuesta = await fetch(`https://newsdata.io/api/1/news?apikey=${MI_API_KEY}&country=${codigoPais}&language=es,en`);
                 const datos = await respuesta.json();
                 
                 feed.innerHTML = "";
 
-                if (datos.data && datos.data.length > 0) {
-                    // Seleccionamos los 5 artículos reales más calientes de la red
-                    const topNoticias = datos.data.slice(0, 5);
+                if (datos.results && datos.results.length > 0) {
+                    // Extraemos las 5 principales noticias devueltas
+                    const topNoticias = datos.results.slice(0, 5);
 
                     topNoticias.forEach(noticia => {
+                        const descripcion = noticia.description ? noticia.description.slice(0, 150) + "..." : "Pulsa en el enlace inferior para leer la cobertura completa y detallada de este titular.";
+
                         feed.innerHTML += `
                             <div class="noticia-tarjeta" style="border-left-color: #00d2ff;">
                                 <h3>${noticia.title}</h3>
-                                <p style="font-size:0.9rem; margin: 8px 0; opacity:0.85; line-height:1.4;">${noticia.content}</p>
+                                <p>${descripcion}</p>
                                 <div class="noticia-info">
-                                    <span>✍️ Autor: ${noticia.author || 'Corresponsal'}</span>
-                                    <span>⏱️ ${noticia.time || 'Reciente'} - ${noticia.date || ''}</span>
+                                    <span>🌐 Fuente: ${(noticia.source_id || 'Global').toUpperCase()}</span>
+                                    <span>⏱️ Conexión viva</span>
                                 </div>
-                                <a href="${noticia.readMoreUrl || '#'}" target="_blank" class="fx-click">Leer artículo completo original →</a>
+                                <a href="${noticia.link}" target="_blank" class="fx-click">Leer noticia original →</a>
                             </div>
                         `;
                     });
 
                 } else {
-                    throw new Error("Estructura de datos vacía");
+                    feed.innerHTML = `
+                        <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
+                            <h3>⚠️ [SIN SEÑAL] No hay actualizaciones recientes registradas en este país bajo los filtros actuales.</h3>
+                            <div class="noticia-info">
+                                <span>Sistema: Standby</span>
+                                <span>Código: NO_NEW_DATA</span>
+                            </div>
+                        </div>
+                    `;
                 }
 
             } catch (error) {
-                // Control si falla internet o la API satura
                 feed.innerHTML = `
                     <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
-                        <h3>❌ [CONEXIÓN INTERRUMPIDA] El servidor internacional no responde en este milisegundo. Intenta sintonizar otra frecuencia.</h3>
+                        <h3>❌ [ERROR SATELITAL] Conexión interrumpida en la verificación de credenciales del servidor.</h3>
                         <div class="noticia-info">
-                            <span>Fallo: TIMEOUT_SATELITAL</span>
-                            <span>Código: API_BUSY</span>
+                            <span>Fallo: FETCH_ERROR</span>
+                            <span>Sistema: Bloqueado</span>
                         </div>
                     </div>
                 `;
             }
 
-            // Inyectar efectos mecánicos de audio a los botones inyectados
             document.querySelectorAll('.fx-click').forEach(enlace => {
                 enlace.addEventListener('click', playCyberClick);
             });
