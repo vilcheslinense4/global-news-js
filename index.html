@@ -439,7 +439,7 @@
 <body>
 
     <div class="top-nav">
-        <a href="../" class="btn-volver" onclick="playCyberClick()">⬅️ Volver a Proyectos</a>
+        <a href="https://vilcheslinense4.github.io/Mi-primer-portafolios/" class="btn-volver" onclick="playCyberClick()">⬅️ Volver a Proyectos</a>
     </div>
 
     <header>
@@ -513,6 +513,8 @@
         
         let proximaPaginaID = null;
         let paisActual = "";
+        // REPARADO AQUÍ: Filtro inteligente para capturar títulos duplicados de la API
+        let titulosCargados = new Set();
 
         function formatearFuente(fuenteOriginal) {
             if (!fuenteOriginal) return 'Global';
@@ -560,6 +562,7 @@
                 feed.innerHTML = "";
                 btnCargar.style.display = "none";
                 proximaPaginaID = null;
+                titulosCargados.clear(); 
                 
                 for (let i = 0; i < 3; i++) {
                     feed.innerHTML += `
@@ -596,8 +599,17 @@
 
                 if (datos.results && datos.results.length > 0) {
                     proximaPaginaID = datos.nextPage || null;
+                    let noticiasMostradasEnEstaTanda = 0;
 
                     datos.results.forEach(noticia => {
+                        // Comprobación estricta de duplicados
+                        if (titulosCargados.has(noticia.title.trim())) {
+                            return; 
+                        }
+                        
+                        titulosCargados.add(noticia.title.trim());
+                        noticiasMostradasEnEstaTanda++;
+
                         const descripcion = noticia.description ? noticia.description.slice(0, 150) + "..." : "Pulsa en el enlace inferior para leer la cobertura completa de este titular.";
                         const fuenteLimpia = formatearFuente(noticia.source_id);
                         
@@ -627,6 +639,11 @@
                             </div>
                         `;
                     });
+
+                    if (noticiasMostradasEnEstaTanda === 0 && proximaPaginaID) {
+                        descargarNoticias(true);
+                        return;
+                    }
 
                     if (proximaPaginaID) {
                         btnCargar.style.display = "block";
