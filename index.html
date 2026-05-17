@@ -8,13 +8,49 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
         body {
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            position: relative;
+            background: linear-gradient(135deg, #071114 0%, #0f2027 50%, #172e3a 100%);
             color: white;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* TEXTURA DE FONDO REFORZADA */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 210, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 255, 170, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Contenedores con prioridad z-index */
+        .top-nav, header, .controles-container, .feed-noticias, footer, .btn-cargar-mas {
+            position: relative;
+            z-index: 1;
         }
 
         .top-nav {
@@ -26,13 +62,19 @@
             margin-bottom: 20px;
         }
 
+        @media (min-width: 768px) {
+            .top-nav, .controles-container {
+                max-width: 1000px !important;
+            }
+        }
+
         .btn-volver {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(0, 210, 255, 0.08);
+            background: rgba(0, 210, 255, 0.1);
             color: #00d2ff;
-            border: 1px solid rgba(0, 210, 255, 0.25);
+            border: 1px solid rgba(0, 210, 255, 0.3);
             padding: 6px 12px;
             border-radius: 6px;
             font-size: 0.75rem;
@@ -56,7 +98,6 @@
             gap: 10px;
         }
 
-        /* Contenedor del Título y el Logo */
         .logo-container {
             display: flex;
             align-items: center;
@@ -64,7 +105,6 @@
             gap: 14px;
         }
 
-        /* LOGO CHULO CIBERPUNK CON CSS PURO */
         .cyber-logo {
             position: relative;
             width: 32px;
@@ -112,21 +152,28 @@
 
         .subtitulo {
             font-size: 0.95rem;
-            opacity: 0.8;
+            opacity: 0.85;
             max-width: 450px;
             line-height: 1.4;
         }
 
-        .selector-container {
+        /* Bloque unificado para los controles superiores */
+        .controles-container {
             width: 100%;
             max-width: 500px;
             margin-bottom: 25px;
             display: flex;
             flex-direction: column;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
-        .selector-container label {
+        .control-group label {
             font-size: 0.85rem;
             color: #00ffaa;
             text-transform: uppercase;
@@ -137,9 +184,9 @@
         .select-cyber {
             width: 100%;
             padding: 14px;
-            background: rgba(0, 0, 0, 0.4);
+            background: #09171c;
             color: #00d2ff;
-            border: 1px solid rgba(0, 210, 255, 0.3);
+            border: 1px solid rgba(0, 210, 255, 0.35);
             border-radius: 12px;
             font-size: 1rem;
             font-weight: bold;
@@ -165,6 +212,52 @@
             color: #00d2ff;
         }
 
+        /* NUEVA ESTILIZACIÓN DE LA BARRA DE BÚSQUEDA */
+        .search-wrapper {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .input-cyber {
+            flex-grow: 1;
+            padding: 14px;
+            background: #09171c;
+            color: white;
+            border: 1px solid rgba(0, 210, 255, 0.35);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-cyber::placeholder {
+            color: rgba(0, 210, 255, 0.4);
+        }
+
+        .input-cyber:focus {
+            border-color: #00ffaa;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+        }
+
+        .btn-buscar {
+            padding: 0 20px;
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            color: #00d2ff;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-buscar:active {
+            background: rgba(0, 255, 170, 0.2);
+            border-color: #00ffaa;
+            color: #00ffaa;
+        }
+
+        /* REJILLA ADAPTABLE */
         .feed-noticias {
             width: 100%;
             max-width: 500px;
@@ -173,44 +266,89 @@
             gap: 20px;
         }
 
+        @media (min-width: 768px) {
+            .feed-noticias {
+                max-width: 1000px;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 25px;
+            }
+            .controles-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                align-items: flex-end;
+            }
+        }
+
         .noticia-tarjeta {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(14, 27, 33, 0.92);
+            backdrop-filter: blur(8px);
             border-left: 4px solid #00d2ff;
             border-radius: 0 16px 16px 0;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.45);
             transition: all 0.2s ease;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            height: 100%;
         }
 
         .noticia-tarjeta:active {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(20, 38, 46, 0.95);
+        }
+
+        .noticia-img-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            background: linear-gradient(45deg, #102026, #1b333b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .noticia-img-placeholder {
+            font-size: 2.5rem;
+            opacity: 0.15;
         }
 
         .noticia-img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .noticia-cuerpo {
             padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .noticia-tarjeta h3 {
             font-size: 1.05rem;
             margin-bottom: 8px;
-            color: white;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
             line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .noticia-tarjeta p {
             font-size: 0.9rem;
             margin: 8px 0 12px 0;
-            opacity: 0.85;
+            color: rgba(255, 255, 255, 0.88);
             line-height: 1.4;
+            flex-grow: 1;
         }
 
         .noticia-footer {
@@ -219,6 +357,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-top: auto;
         }
 
         .noticia-info {
@@ -228,7 +367,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 5px;
-            opacity: 0.9;
+            font-weight: 500;
         }
 
         .noticia-tarjeta a {
@@ -260,6 +399,12 @@
             transition: all 0.2s ease;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,210,255,0.1);
+        }
+
+        @media (min-width: 768px) {
+            .btn-cargar-mas {
+                max-width: 1000px;
+            }
         }
 
         .btn-cargar-mas:active {
@@ -305,32 +450,42 @@
         <p class="subtitulo">Conexión satelital con los principales focos de información global.</p>
     </header>
 
-    <div class="selector-container">
-        <label for="pais-selector">🛰️ Sintonizar Estación:</label>
-        <select id="pais-selector" class="select-cyber">
-            <option value="" disabled selected>-- Selecciona un país del mundo --</option>
-            <option value="es">🇪🇸 España</option>
-            <option value="us">🇺🇸 Estados Unidos</option>
-            <option value="mx">🇲🇽 México</option>
-            <option value="ar">🇦🇷 Argentina</option>
-            <option value="co">🇨🇴 Colombia</option>
-            <option value="cl">🇨🇱 Chile</option>
-            <option value="gb">🇬🇧 Reino Unido</option>
-            <option value="fr">🇫🇷 Francia</option>
-            <option value="de">🇩🇪 Alemania</option>
-            <option value="it">🇮🇹 Italia</option>
-            <option value="pt">🇵🇹 Portugal</option>
-            <option value="jp">🇯🇵 Japón</option>
-            <option value="cn">🇨🇳 China</option>
-            <option value="kr">🇰🇷 Corea del Sur</option>
-            <option value="in">🇮🇳 India</option>
-            <option value="ru">🇷🇺 Rusia</option>
-            <option value="br">🇧🇷 Brasil</option>
-            <option value="ca">🇨🇦 Canadá</option>
-            <option value="au">🇦🇺 Australia</option>
-            <option value="za">🇿🇦 Sudáfrica</option>
-            <option value="eg">🇪🇬 Egipto</option>
-        </select>
+    <div class="controles-container">
+        <div class="control-group">
+            <label for="pais-selector">🛰️ Sintonizar Estación:</label>
+            <select id="pais-selector" class="select-cyber">
+                <option value="" disabled selected>-- Selecciona un país del mundo --</option>
+                <option value="es">🇪🇸 España</option>
+                <option value="us">🇺🇸 Estados Unidos</option>
+                <option value="mx">🇲🇽 México</option>
+                <option value="ar">🇦🇷 Argentina</option>
+                <option value="co">🇨🇴 Colombia</option>
+                <option value="cl">🇨🇱 Chile</option>
+                <option value="gb">🇬🇧 Reino Unido</option>
+                <option value="fr">🇫🇷 Francia</option>
+                <option value="de">🇩🇪 Alemania</option>
+                <option value="it">🇮🇹 Italia</option>
+                <option value="pt">🇵🇹 Portugal</option>
+                <option value="jp">🇯🇵 Japón</option>
+                <option value="cn">🇨🇳 China</option>
+                <option value="kr">🇰🇷 Corea del Sur</option>
+                <option value="in">🇮🇳 India</option>
+                <option value="ru">🇷🇺 Rusia</option>
+                <option value="br">🇧🇷 Brasil</option>
+                <option value="ca">🇨🇦 Canadá</option>
+                <option value="au">🇦🇺 Australia</option>
+                <option value="za">🇿🇦 Sudáfrica</option>
+                <option value="eg">🇪🇬 Egipto</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="buscador-cyber">🔍 Filtrar Frecuencia (Palabra Clave):</label>
+            <div class="search-wrapper">
+                <input type="text" id="buscador-cyber" class="input-cyber" placeholder="Ej: fútbol, tecnología, real madrid...">
+                <button id="btn-buscar" class="btn-buscar">Buscar</button>
+            </div>
+        </div>
     </div>
 
     <div class="feed-noticias" id="feed">
@@ -359,6 +514,16 @@
         let proximaPaginaID = null;
         let paisActual = "";
 
+        function formatearFuente(fuenteOriginal) {
+            if (!fuenteOriginal) return 'Global';
+            let f = fuenteOriginal.toLowerCase().trim();
+            if (f.includes('laopiniondemucria')) return 'La Opinión de Murcia';
+            if (f.includes('elcorreogallego')) return 'El Correo Gallego';
+            if (f.includes('lavanguardia')) return 'La Vanguardia';
+            if (f.includes('expansion')) return 'Expansión';
+            return fuenteOriginal.toUpperCase();
+        }
+
         function playCyberClick() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -383,10 +548,14 @@
         }
 
         const selector = document.getElementById('pais-selector');
+        const buscador = document.getElementById('buscador-cyber');
+        const btnBuscar = document.getElementById('btn-buscar');
         const feed = document.getElementById('feed');
         const btnCargar = document.getElementById('btn-cargar');
 
         async function descargarNoticias(acumular = false) {
+            if (!paisActual) return; // Forzar a elegir país para que la API responda bien
+
             if (!acumular) {
                 feed.innerHTML = "";
                 btnCargar.style.display = "none";
@@ -409,7 +578,14 @@
             }
 
             try {
+                // INTEGRACIÓN DEL PARÁMETRO DE BÚSQUEDA EN LA URL
                 let url = `https://newsdata.io/api/1/news?apikey=${MI_API_KEY}&country=${paisActual}&language=es,en`;
+                
+                const textoBusqueda = buscador.value.trim();
+                if (textoBusqueda !== "") {
+                    url += `&q=${encodeURIComponent(textoBusqueda)}`;
+                }
+
                 if (acumular && proximaPaginaID) {
                     url += `&page=${proximaPaginaID}`;
                 }
@@ -424,11 +600,16 @@
 
                     datos.results.forEach(noticia => {
                         const descripcion = noticia.description ? noticia.description.slice(0, 150) + "..." : "Pulsa en el enlace inferior para leer la cobertura completa de este titular.";
+                        const fuenteLimpia = formatearFuente(noticia.source_id);
                         
-                        let bloqueImagen = "";
+                        let bloqueImagen = `
+                            <div class="noticia-img-container">
+                                <div class="noticia-img-placeholder">🛰️</div>
+                        `;
                         if (noticia.image_url && noticia.image_url.startsWith('http')) {
-                            bloqueImagen = `<img src="${noticia.image_url}" class="noticia-img" onerror="this.style.display='none';" alt="Noticia">`;
+                            bloqueImagen += `<img src="${noticia.image_url}" class="noticia-img" onerror="this.style.display='none';" alt="Noticia">`;
                         }
+                        bloqueImagen += `</div>`;
 
                         feed.innerHTML += `
                             <div class="noticia-tarjeta" style="border-left-color: #00d2ff;">
@@ -438,7 +619,7 @@
                                     <p>${descripcion}</p>
                                     <div class="noticia-footer">
                                         <div class="noticia-info">
-                                            <span>🌐 Fuente: ${(noticia.source_id || 'Global').toUpperCase()}</span>
+                                            <span>🌐 Fuente: ${fuenteLimpia}</span>
                                             <span>⏱️ En vivo</span>
                                         </div>
                                         <a href="${noticia.link}" target="_blank" class="fx-click">Leer noticia original →</a>
@@ -460,10 +641,10 @@
                         feed.innerHTML = `
                             <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
                                 <div class="noticia-cuerpo">
-                                    <h3>⚠️ [SIN SEÑAL] No se han encontrado frecuencias disponibles en este cuadrante ahora mismo.</h3>
+                                    <h3>⚠️ [SIN SEÑAL] No se han encontrado frecuencias asociadas a ese término en este cuadrante.</h3>
                                     <div class="noticia-footer" style="border: none; padding: 0; margin-top: 10px;">
                                         <div class="noticia-info">
-                                            <span>Sistema: Standby</span>
+                                            <span>Búsqueda: Sin resultados</span>
                                             <span>Código: 404_EMPTY</span>
                                         </div>
                                     </div>
@@ -496,9 +677,23 @@
             });
         }
 
+        // Eventos para disparar la descarga
         selector.addEventListener('change', () => {
             paisActual = selector.value;
             descargarNoticias(false);
+        });
+
+        btnBuscar.addEventListener('click', () => {
+            playCyberClick();
+            descargarNoticias(false);
+        });
+
+        // Permitir buscar pulsando la tecla "Enter" en el teclado del móvil o PC
+        buscador.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                playCyberClick();
+                descargarNoticias(false);
+            }
         });
 
         btnCargar.addEventListener('click', () => {
