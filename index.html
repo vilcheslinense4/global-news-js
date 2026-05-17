@@ -78,7 +78,6 @@
             color: #00ffaa;
         }
 
-        /* Estilización forzada para las opciones en móviles */
         .select-cyber option {
             background: #14262c;
             color: #00d2ff;
@@ -101,7 +100,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Animación de escaneo parpadeante */
         @keyframes cyber-pulse {
             0% { opacity: 0.6; border-left-color: #00d2ff; }
             50% { opacity: 1; border-left-color: #00ffaa; }
@@ -117,6 +115,20 @@
             margin-bottom: 8px;
             color: white;
             line-height: 1.4;
+        }
+
+        /* Estilo para los enlaces de noticias reales */
+        .noticia-tarjeta a {
+            color: #00d2ff;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .noticia-tarjeta a:active {
+            color: #00ffaa;
         }
 
         .noticia-info {
@@ -149,17 +161,13 @@
             <option value="fr">🇫🇷 Francia</option>
             <option value="de">🇩🇪 Alemania</option>
             <option value="it">🇮🇹 Italia</option>
-            <option value="pt">🇵🇹 Portugal</option>
             <option value="jp">🇯🇵 Japón</option>
             <option value="cn">🇨🇳 China</option>
-            <option value="kr">🇰🇷 Corea del Sur</option>
             <option value="in">🇮🇳 India</option>
             <option value="ru">🇷🇺 Rusia</option>
             <option value="br">🇧🇷 Brasil</option>
             <option value="ca">🇨🇦 Canadá</option>
             <option value="au">🇦🇺 Australia</option>
-            <option value="za">🇿🇦 Sudáfrica</option>
-            <option value="eg">🇪🇬 Egipto</option>
         </select>
     </div>
 
@@ -198,21 +206,81 @@
         }
 
         const selector = document.getElementById('pais-selector');
-        const textoEstado = document.getElementById('texto-estado');
-        const pantallaEstado = document.getElementById('pantalla-estado');
-        const infoIzq = document.getElementById('info-izq');
-        const infoDer = document.getElementById('info-der');
+        const feed = document.getElementById('feed');
 
-        selector.addEventListener('change', (evento) => {
+        selector.addEventListener('change', async (evento) => {
             playCyberClick();
 
+            const codigoPais = selector.value;
             const nombrePais = selector.options[selector.selectedIndex].text;
             
-            // Activamos animación visual de escaneo
-            pantallaEstado.classList.add('escaneando');
-            textoEstado.innerHTML = `🛰️ [CONECTANDO] Enlazando con la señal de <strong>${nombrePais}</strong>... Descargando paquetes de datos del satélite.`;
-            infoIzq.innerText = "Sistema: ESCANEANDO";
-            infoDer.innerText = "Canal: Buscando...";
+            // 1. Mostrar pantalla de carga simulada con el efecto que ya viste
+            feed.innerHTML = `
+                <div class="noticia-tarjeta escaneando" style="border-left-color: #00ffaa;">
+                    <h3>🛰️ [CONECTANDO] Enlazando con la señal de ${nombrePais}... Descargando paquetes de datos del satélite.</h3>
+                    <div class="noticia-info">
+                        <span>Sistema: ESCANEANDO</span>
+                        <span>Canal: Buscando...</span>
+                    </div>
+                </div>
+            `;
+
+            // 2. Conexión asíncrona real mediante API pública de feeds de noticias globales
+            try {
+                // Usamos un proxy de noticias abierto filtrado por el código del país elegido
+                const respuesta = await fetch(`https://newsdata.io/api/1/news?apikey=pub_40854fa16b0df3f009f7b1dbbd8f8f3c71383&country=${codigoPais}&language=es,en`);
+                const datos = await respuesta.json();
+                
+                // Limpiamos la pantalla de carga para meter las noticias reales de internet
+                feed.innerHTML = "";
+
+                if (datos.results && datos.results.length > 0) {
+                    // Cogemos las 5 noticias más frescas que nos devuelva el servidor
+                    const topNoticias = datos.results.slice(0, 5);
+
+                    topNoticias.forEach(noticia => {
+                        const tarjetaHTML = `
+                            <div class="noticia-tarjeta" style="border-left-color: #00d2ff;">
+                                <h3>${noticia.title}</h3>
+                                <div class="noticia-info">
+                                    <span>📰 Fuente: ${noticia.source_id || 'Global'}</span>
+                                    <span>⏱️ Satélite activo</span>
+                                </div>
+                                <a href="${noticia.link}" target="_blank" class="fx-click">Leer titular completo →</a>
+                            </div>
+                        `;
+                        feed.innerHTML += tarjetaHTML;
+                    });
+
+                    // Vincular sonido a los nuevos enlaces de lectura creados dinámicamente
+                    document.querySelectorAll('.fx-click').forEach(enlace => {
+                        enlace.addEventListener('click', playCyberClick);
+                    });
+
+                } else {
+                    feed.innerHTML = `
+                        <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
+                            <h3>⚠️ [ERROR DE ENLACE] No se han encontrado frecuencias de noticias disponibles en español/inglés para este cuadrante ahora mismo.</h3>
+                            <div class="noticia-info">
+                                <span>Sistema: Abortado</span>
+                                <span>Código: 404_EMPTY</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                // Control de fallos profesional si internet va lento o se corta la API
+                feed.innerHTML = `
+                    <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
+                        <h3>❌ [CONEXIÓN INTERRUMPIDA] El satélite no responde. Revisa tu conexión a la red o intenta sintonizar otro país.</h3>
+                        <div class="noticia-info">
+                            <span>Sistema: Desconectado</span>
+                            <span>Fallo: API_TIMEOUT</span>
+                        </div>
+                    </div>
+                `;
+            }
         });
     </script>
 </body>
