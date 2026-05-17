@@ -17,10 +17,40 @@
             padding: 20px;
         }
 
+        /* Contenedor superior para el botón volver y el título */
+        .top-nav {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .btn-volver {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 210, 255, 0.1);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-volver:active {
+            background: rgba(0, 255, 170, 0.2);
+            color: #00ffaa;
+            border-color: #00ffaa;
+        }
+
         header {
             text-align: center;
             margin-bottom: 25px;
-            margin-top: 10px;
         }
 
         h1 {
@@ -33,6 +63,8 @@
         .subtitulo {
             font-size: 0.95rem;
             opacity: 0.8;
+            max-width: 450px;
+            margin: 0 auto;
         }
 
         .selector-container {
@@ -106,10 +138,9 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* Contenedor e imagen de la noticia */
         .noticia-img {
             width: 100%;
-            height: 180px;
+            height: 190px;
             object-fit: cover;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -162,7 +193,45 @@
             color: #00ffaa;
         }
 
-        /* Estilos de Efecto de Carga (Skeleton Blur) */
+        /* Botón de Cargar Más Noticias */
+        .btn-cargar-mas {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, rgba(0,210,255,0.15) 0%, rgba(0,255,170,0.15) 100%);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.1);
+        }
+
+        .btn-cargar-mas:active {
+            transform: scale(0.98);
+            border-color: #00ffaa;
+            color: #00ffaa;
+            box-shadow: 0 4px 20px rgba(0,255,170,0.2);
+        }
+
+        /* Cierre estético inferior */
+        footer {
+            margin-top: auto;
+            padding: 25px 0 10px 0;
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.4;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Animaciones del efecto de carga */
         @keyframes skeleton-blink {
             0% { background-color: rgba(255, 255, 255, 0.05); }
             50% { background-color: rgba(255, 255, 255, 0.15); }
@@ -176,6 +245,10 @@
     </style>
 </head>
 <body>
+
+    <div class="top-nav">
+        <a href="../" class="btn-volver" onclick="playCyberClick()">⬅️ Volver a Proyectos</a>
+    </div>
 
     <header>
         <h1>🌍 CyberNews Hub</h1>
@@ -224,8 +297,18 @@
         </div>
     </div>
 
+    <button id="btn-cargar" class="btn-cargar-mas">🔄 Cargar más noticias de esta región</button>
+
+    <footer>
+        🛰️ terminal cuántica de noticias de última hora • 2026
+    </footer>
+
     <script>
         const MI_API_KEY = "pub_c49581d6d14b474f90eb927fd3288125";
+        
+        // Variables de control de paginación
+        let proximaPaginaID = null;
+        let paisActual = "";
 
         function playCyberClick() {
             try {
@@ -252,40 +335,51 @@
 
         const selector = document.getElementById('pais-selector');
         const feed = document.getElementById('feed');
+        const btnCargar = document.getElementById('btn-cargar');
 
-        selector.addEventListener('change', async () => {
-            playCyberClick();
-
-            const codigoPais = selector.value;
-            
-            // 🎬 EFECTO SKELETON: Crea tarjetas simuladas brillantes mientras descarga los datos reales
-            feed.innerHTML = "";
-            for (let i = 0; i < 3; i++) {
-                feed.innerHTML += `
-                    <div class="noticia-tarjeta" style="border-left-color: #00ffaa;">
-                        <div class="skeleton-box" style="width: 100%; height: 140px; opacity: 0.4;"></div>
-                        <div class="noticia-cuerpo">
-                            <div class="skeleton-box" style="width: 85%; height: 18px; margin-bottom: 10px;"></div>
-                            <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 15px;"></div>
-                            <div class="skeleton-box" style="width: 100%; height: 40px;"></div>
+        // Función principal de descarga remota
+        async function descargarNoticias(acumular = false) {
+            if (!acumular) {
+                feed.innerHTML = "";
+                btnCargar.style.display = "none";
+                proximaPaginaID = null;
+                
+                // Efecto de carga inicial elegante (Skeleton bars)
+                for (let i = 0; i < 3; i++) {
+                    feed.innerHTML += `
+                        <div class="noticia-tarjeta" style="border-left-color: #00ffaa;">
+                            <div class="skeleton-box" style="width: 100%; height: 140px; opacity: 0.4;"></div>
+                            <div class="noticia-cuerpo">
+                                <div class="skeleton-box" style="width: 85%; height: 18px; margin-bottom: 10px;"></div>
+                                <div class="skeleton-box" style="width: 60%; height: 14px; margin-bottom: 15px;"></div>
+                                <div class="skeleton-box" style="width: 100%; height: 35px;"></div>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+            } else {
+                btnCargar.innerText = "🛰️ Conectando con el satélite...";
             }
 
             try {
-                const respuesta = await fetch(`https://newsdata.io/api/1/news?apikey=${MI_API_KEY}&country=${codigoPais}&language=es,en`);
+                // Construcción de la dirección del satélite incorporando el token de página siguiente si existe
+                let url = `https://newsdata.io/api/1/news?apikey=${MI_API_KEY}&country=${paisActual}&language=es,en`;
+                if (acumular && proximaPaginaID) {
+                    url += `&page=${proximaPaginaID}`;
+                }
+
+                const respuesta = await fetch(url);
                 const datos = await respuesta.json();
                 
-                feed.innerHTML = "";
+                if (!acumular) feed.innerHTML = "";
 
                 if (datos.results && datos.results.length > 0) {
-                    const topNoticias = datos.results.slice(0, 5);
+                    // Guardamos la ID del siguiente bloque de datos provisto por el servidor
+                    proximaPaginaID = datos.nextPage || null;
 
-                    topNoticias.forEach(noticia => {
-                        const descripcion = noticia.description ? noticia.description.slice(0, 150) + "..." : "Pulsa en el enlace inferior para leer la cobertura completa y detallada de este titular.";
+                    datos.results.forEach(noticia => {
+                        const descripcion = noticia.description ? noticia.description.slice(0, 150) + "..." : "Pulsa en el enlace inferior para leer la cobertura completa de este titular.";
                         
-                        // Evaluar si viene una imagen real válida del periódico
                         let bloqueImagen = "";
                         if (noticia.image_url && noticia.image_url.startsWith('http')) {
                             bloqueImagen = `<img src="${noticia.image_url}" class="noticia-img" onerror="this.style.display='none';" alt="Noticia">`;
@@ -309,41 +403,65 @@
                         `;
                     });
 
+                    // Si quedan más paquetes de datos disponibles en el servidor, desplegamos el cargador inferior
+                    if (proximaPaginaID) {
+                        btnCargar.style.display = "block";
+                        btnCargar.innerText = "🔄 Cargar más noticias de esta región";
+                    } else {
+                        btnCargar.style.display = "none";
+                    }
+
                 } else {
+                    if (!acumular) {
+                        feed.innerHTML = `
+                            <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
+                                <div class="noticia-cuerpo">
+                                    <h3>⚠️ [SIN SEÑAL] No se han encontrado frecuencias disponibles en este cuadrante ahora mismo.</h3>
+                                    <div class="noticia-footer" style="border: none; padding: 0; margin-top: 10px;">
+                                        <div class="noticia-info">
+                                            <span>Sistema: Standby</span>
+                                            <span>Código: 404_EMPTY</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+
+            } catch (error) {
+                if (!acumular) {
                     feed.innerHTML = `
                         <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
                             <div class="noticia-cuerpo">
-                                <h3>⚠️ [SIN SEÑAL] No se han encontrado frecuencias disponibles en este cuadrante ahora mismo.</h3>
+                                <h3>❌ [ERROR SATELITAL] Conexión interrumpida con el servidor internacional.</h3>
                                 <div class="noticia-footer" style="border: none; padding: 0; margin-top: 10px;">
                                     <div class="noticia-info">
-                                        <span>Sistema: Standby</span>
-                                        <span>Código: 404_EMPTY</span>
+                                        <span>Fallo: FETCH_ERROR</span>
+                                        <span>Sistema: Bloqueado</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
                 }
-
-            } catch (error) {
-                feed.innerHTML = `
-                    <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
-                        <div class="noticia-cuerpo">
-                            <h3>❌ [ERROR SATELITAL] Conexión interrumpida con el servidor internacional.</h3>
-                            <div class="noticia-footer" style="border: none; padding: 0; margin-top: 10px;">
-                                <div class="noticia-info">
-                                    <span>Fallo: FETCH_ERROR</span>
-                                    <span>Sistema: Bloqueado</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
             }
 
             document.querySelectorAll('.fx-click').forEach(enlace => {
                 enlace.addEventListener('click', playCyberClick);
             });
+        }
+
+        // Evento al conmutar la estación de un país
+        selector.addEventListener('change', () => {
+            paisActual = selector.value;
+            descargarNoticias(false);
+        });
+
+        // Evento al pulsar la barra inferior de expansión
+        btnCargar.addEventListener('click', () => {
+            playCyberClick();
+            descargarNoticias(true);
         });
     </script>
 </body>
