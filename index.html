@@ -35,7 +35,6 @@
             opacity: 0.8;
         }
 
-        /* CONTENEDOR DEL SELECTOR GLOBAL */
         .selector-container {
             width: 100%;
             max-width: 500px;
@@ -53,11 +52,10 @@
             font-weight: bold;
         }
 
-        /* Barra de selección estilo futurista */
         .select-cyber {
             width: 100%;
             padding: 14px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             color: #00d2ff;
             border: 1px solid rgba(0, 210, 255, 0.3);
             border-radius: 12px;
@@ -66,7 +64,6 @@
             outline: none;
             cursor: pointer;
             transition: all 0.3s ease;
-            /* Estilo para que en iPhone se vea limpio */
             -webkit-appearance: none;
             appearance: none;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%2300d2ff'><polygon points='0,0 100,0 50,50'/></svg>");
@@ -81,13 +78,12 @@
             color: #00ffaa;
         }
 
-        /* Opciones del menú */
+        /* Estilización forzada para las opciones en móviles */
         .select-cyber option {
             background: #14262c;
-            color: white;
+            color: #00d2ff;
         }
 
-        /* CONTENEDOR DE NOTICIAS */
         .feed-noticias {
             width: 100%;
             max-width: 500px;
@@ -103,6 +99,17 @@
             border-radius: 0 12px 12px 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
+        }
+
+        /* Animación de escaneo parpadeante */
+        @keyframes cyber-pulse {
+            0% { opacity: 0.6; border-left-color: #00d2ff; }
+            50% { opacity: 1; border-left-color: #00ffaa; }
+            100% { opacity: 0.6; border-left-color: #00d2ff; }
+        }
+
+        .escaneando {
+            animation: cyber-pulse 1s infinite ease-in-out;
         }
 
         .noticia-tarjeta h3 {
@@ -160,14 +167,13 @@
         <div class="noticia-tarjeta" id="pantalla-estado">
             <h3 id="texto-estado">Selecciona un objetivo en la barra superior para establecer conexión satelital...</h3>
             <div class="noticia-info">
-                <span>Sistema: Listo</span>
-                <span>Canal: Standby</span>
+                <span id="info-izq">Sistema: Listo</span>
+                <span id="info-der">Canal: Standby</span>
             </div>
         </div>
     </div>
 
     <script>
-        // Función de Audio API para simular el click físico al interactuar
         function playCyberClick() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -191,21 +197,22 @@
             }
         }
 
-        // Detectar cuando el usuario cambia de país en la barra
         const selector = document.getElementById('pais-selector');
         const textoEstado = document.getElementById('texto-estado');
         const pantallaEstado = document.getElementById('pantalla-estado');
+        const infoIzq = document.getElementById('info-izq');
+        const infoDer = document.getElementById('info-der');
 
         selector.addEventListener('change', (evento) => {
-            // 1. Suena el click cibernético
             playCyberClick();
 
-            // 2. Sacamos el nombre completo del país elegido
             const nombrePais = selector.options[selector.selectedIndex].text;
             
-            // 3. Modificamos la interfaz simulando un escaneo
-            pantallaEstado.style.borderLeftColor = "#00ffaa"; // Cambia el borde a verde neón
-            textoEstado.innerHTML = `📡 Conectando con los servidores de <strong>${nombrePais}</strong>... Buscando señales de información.`;
+            // Activamos animación visual de escaneo
+            pantallaEstado.classList.add('escaneando');
+            textoEstado.innerHTML = `🛰️ [CONECTANDO] Enlazando con la señal de <strong>${nombrePais}</strong>... Descargando paquetes de datos del satélite.`;
+            infoIzq.innerText = "Sistema: ESCANEANDO";
+            infoDer.innerText = "Canal: Buscando...";
         });
     </script>
 </body>
