@@ -117,7 +117,6 @@
             line-height: 1.4;
         }
 
-        /* Estilo para los enlaces de noticias reales */
         .noticia-tarjeta a {
             color: #00d2ff;
             text-decoration: none;
@@ -148,35 +147,25 @@
     </header>
 
     <div class="selector-container">
-        <label for="pais-selector">🛰️ Sintonizar Estación:</label>
-        <select id="pais-selector" class="select-cyber">
-            <option value="" disabled selected>-- Selecciona un país del mundo --</option>
-            <option value="es">🇪🇸 España</option>
-            <option value="us">🇺🇸 Estados Unidos</option>
-            <option value="mx">🇲🇽 México</option>
-            <option value="ar">🇦🇷 Argentina</option>
-            <option value="co">🇨🇴 Colombia</option>
-            <option value="cl">🇨🇱 Chile</option>
-            <option value="gb">🇬🇧 Reino Unido</option>
-            <option value="fr">🇫🇷 Francia</option>
-            <option value="de">🇩🇪 Alemania</option>
-            <option value="it">🇮🇹 Italia</option>
-            <option value="jp">🇯🇵 Japón</option>
-            <option value="cn">🇨🇳 China</option>
-            <option value="in">🇮🇳 India</option>
-            <option value="ru">🇷🇺 Rusia</option>
-            <option value="br">🇧🇷 Brasil</option>
-            <option value="ca">🇨🇦 Canadá</option>
-            <option value="au">🇦🇺 Australia</option>
+        <label for="categoria-selector">🛰️ Sintonizar Canal de Transmisión:</label>
+        <select id="categoria-selector" class="select-cyber">
+            <option value="" disabled selected>-- Elige una frecuencia internacional --</option>
+            <option value="technology">🤖 Tecnología & Ciberseguridad</option>
+            <option value="science">🪐 Ciencia y Espacio</option>
+            <option value="world">🌍 Noticias Globales</option>
+            <option value="business">📈 Economía y Negocios</option>
+            <option value="politics">🏛️ Política Internacional</option>
+            <option value="entertainment">🎬 Cine y Cultura</option>
+            <option value="sports">⚽ Deportes Globales</option>
         </select>
     </div>
 
     <div class="feed-noticias" id="feed">
         <div class="noticia-tarjeta" id="pantalla-estado">
-            <h3 id="texto-estado">Selecciona un objetivo en la barra superior para establecer conexión satelital...</h3>
+            <h3>Selecciona una frecuencia en la barra superior para entablar la conexión de red...</h3>
             <div class="noticia-info">
-                <span id="info-izq">Sistema: Listo</span>
-                <span id="info-der">Canal: Standby</span>
+                <span>Sistema: Listo</span>
+                <span>Canal: Standby</span>
             </div>
         </div>
     </div>
@@ -205,82 +194,72 @@
             }
         }
 
-        const selector = document.getElementById('pais-selector');
+        const selector = document.getElementById('categoria-selector');
         const feed = document.getElementById('feed');
 
-        selector.addEventListener('change', async (evento) => {
+        selector.addEventListener('change', async () => {
             playCyberClick();
 
-            const codigoPais = selector.value;
-            const nombrePais = selector.options[selector.selectedIndex].text;
+            const categoria = selector.value;
+            const nombreCategoria = selector.options[selector.selectedIndex].text;
             
-            // 1. Mostrar pantalla de carga simulada con el efecto que ya viste
+            // 1. Efecto visual pro de escaneo en verde neón
             feed.innerHTML = `
                 <div class="noticia-tarjeta escaneando" style="border-left-color: #00ffaa;">
-                    <h3>🛰️ [CONECTANDO] Enlazando con la señal de ${nombrePais}... Descargando paquetes de datos del satélite.</h3>
+                    <h3>⚡ [ENLAZANDO] Extrayendo transmisiones en vivo del canal ${nombreCategoria}... Por favor, espere.</h3>
                     <div class="noticia-info">
-                        <span>Sistema: ESCANEANDO</span>
-                        <span>Canal: Buscando...</span>
+                        <span>Frecuencia: Conectando</span>
+                        <span>Satélite: Buscando satélites de datos...</span>
                     </div>
                 </div>
             `;
 
-            // 2. Conexión asíncrona real mediante API pública de feeds de noticias globales
+            // 2. Conexión Real vía Fetch a la API viva de internet
             try {
-                // Usamos un proxy de noticias abierto filtrado por el código del país elegido
-                const respuesta = await fetch(`https://newsdata.io/api/1/news?apikey=pub_40854fa16b0df3f009f7b1dbbd8f8f3c71383&country=${codigoPais}&language=es,en`);
+                const respuesta = await fetch(`https://inshorts.vercel.app/news?category=${categoria}`);
                 const datos = await respuesta.json();
                 
-                // Limpiamos la pantalla de carga para meter las noticias reales de internet
                 feed.innerHTML = "";
 
-                if (datos.results && datos.results.length > 0) {
-                    // Cogemos las 5 noticias más frescas que nos devuelva el servidor
-                    const topNoticias = datos.results.slice(0, 5);
+                if (datos.data && datos.data.length > 0) {
+                    // Seleccionamos los 5 artículos reales más calientes de la red
+                    const topNoticias = datos.data.slice(0, 5);
 
                     topNoticias.forEach(noticia => {
-                        const tarjetaHTML = `
+                        feed.innerHTML += `
                             <div class="noticia-tarjeta" style="border-left-color: #00d2ff;">
                                 <h3>${noticia.title}</h3>
+                                <p style="font-size:0.9rem; margin: 8px 0; opacity:0.85; line-height:1.4;">${noticia.content}</p>
                                 <div class="noticia-info">
-                                    <span>📰 Fuente: ${noticia.source_id || 'Global'}</span>
-                                    <span>⏱️ Satélite activo</span>
+                                    <span>✍️ Autor: ${noticia.author || 'Corresponsal'}</span>
+                                    <span>⏱️ ${noticia.time || 'Reciente'} - ${noticia.date || ''}</span>
                                 </div>
-                                <a href="${noticia.link}" target="_blank" class="fx-click">Leer titular completo →</a>
+                                <a href="${noticia.readMoreUrl || '#'}" target="_blank" class="fx-click">Leer artículo completo original →</a>
                             </div>
                         `;
-                        feed.innerHTML += tarjetaHTML;
-                    });
-
-                    // Vincular sonido a los nuevos enlaces de lectura creados dinámicamente
-                    document.querySelectorAll('.fx-click').forEach(enlace => {
-                        enlace.addEventListener('click', playCyberClick);
                     });
 
                 } else {
-                    feed.innerHTML = `
-                        <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
-                            <h3>⚠️ [ERROR DE ENLACE] No se han encontrado frecuencias de noticias disponibles en español/inglés para este cuadrante ahora mismo.</h3>
-                            <div class="noticia-info">
-                                <span>Sistema: Abortado</span>
-                                <span>Código: 404_EMPTY</span>
-                            </div>
-                        </div>
-                    `;
+                    throw new Error("Estructura de datos vacía");
                 }
 
             } catch (error) {
-                // Control de fallos profesional si internet va lento o se corta la API
+                // Control si falla internet o la API satura
                 feed.innerHTML = `
                     <div class="noticia-tarjeta" style="border-left-color: #ff0055;">
-                        <h3>❌ [CONEXIÓN INTERRUMPIDA] El satélite no responde. Revisa tu conexión a la red o intenta sintonizar otro país.</h3>
+                        <h3>❌ [CONEXIÓN INTERRUMPIDA] El servidor internacional no responde en este milisegundo. Intenta sintonizar otra frecuencia.</h3>
                         <div class="noticia-info">
-                            <span>Sistema: Desconectado</span>
-                            <span>Fallo: API_TIMEOUT</span>
+                            <span>Fallo: TIMEOUT_SATELITAL</span>
+                            <span>Código: API_BUSY</span>
                         </div>
                     </div>
                 `;
             }
+
+            // Inyectar efectos mecánicos de audio a los botones inyectados
+            document.querySelectorAll('.fx-click').forEach(enlace => {
+                enlace.addEventListener('click', playCyberClick);
+            });
         });
     </script>
 </body>
